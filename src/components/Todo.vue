@@ -1,23 +1,50 @@
-<!-- Example: Tracker.vue -->
 <template>
-    <div class="content">
-  <div class="container">
-    <div class="todo-app">
-      <h2>Stay Organized With Our Task Manager</h2>
+   <header class="site-header">
+    <marquee behavior="scroll" direction="left" scrollamount="5">
+      ⚠ Your data is stored locally in your browser. Clearing browser data or using a different browser/device will remove your saved progress.
+    </marquee>
+  </header>
+  <div class="content">
+     <button class="back-button" @click="$router.go(-1)">Back</button>
+    <div class="container">
+      <div class="todo-app">
+        <h2>Stay Organized With Our Task Manager</h2>
 
-      <textarea
-        id="input-box"
-        v-model="inputBox"
-        placeholder="Type in your to-do-list"
-      ></textarea>
+        <textarea
+          id="input-box"
+          v-model="inputBox"
+          placeholder="Type in your to-do list"
+        ></textarea>
 
-      <div class="btn-gap">
-<input type="date"  class="task-date" v-model="taskDate" /> <!-- Calendar date picker -->
-      <button @click="addTask">Add Task</button>
+        <div class="btn-gap">
+          <input type="date" class="task-date" v-model="taskDate" />
+          <button @click="addTask">Add Task</button>
+        </div>
       </div>
     </div>
-  </div>
-  <ul ref="listContainer" id="task-column" class="task-display"></ul>
+
+    <ul id="task-column" class="task-display">
+      <li v-for="(task, index) in tasks" :key="index" :class="{ checked: task.completed }">
+        <input
+          type="checkbox"
+          v-model="task.completed"
+          @change="saveData"
+        />
+        <span v-if="!task.editing" @dblclick="editTask(index)">
+          {{ task.text }} <small v-if="task.date">(Due: {{ task.date }})</small>
+        </span>
+        <input
+          v-else
+          type="text"
+          v-model="task.text"
+          @keyup.enter="finishEdit(index)"
+          @blur="finishEdit(index)"
+          class="edit-input"
+        />
+        <button class="edit-btn" @click="editTask(index)" v-if="!task.editing">Edit</button>
+        <button class="delete-btn" @click="removeTask(index)">✖</button>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -25,80 +52,82 @@
 import { ref, onMounted } from 'vue';
 
 const inputBox = ref('');
-const taskDate = ref(''); 
-const listContainer = ref(null);
+const taskDate = ref('');
+const tasks = ref([]);
 
+// Add a new task
 function addTask() {
   if (inputBox.value.trim() === '') {
     alert('You need to write a new task');
     return;
   }
 
-  const li = document.createElement('li');
-  li.textContent = inputBox.value;
-  if (taskDate.value) {
-    li.textContent += ` (Due: ${taskDate.value})`; // Append date to task
-  }
+  tasks.value.push({
+    text: inputBox.value.trim(),
+    date: taskDate.value,
+    completed: false,
+    editing: false
+  });
 
-  // Create delete button (X)
-  const span = document.createElement('span');
-  span.className = 'delete-btn';
-  span.innerHTML = '\u00d7';
-  span.onclick = function () {
-    li.remove();
-    saveData();
-  };
-
-  li.appendChild(span);
-  listContainer.value.appendChild(li);
   inputBox.value = '';
   taskDate.value = '';
   saveData();
 }
 
+// Save tasks to localStorage
 function saveData() {
-  localStorage.setItem('taskData', listContainer.value.innerHTML);
+  localStorage.setItem('taskData', JSON.stringify(tasks.value));
 }
 
+// Load tasks from localStorage
 function loadTasks() {
-  listContainer.value.innerHTML = localStorage.getItem('taskData') || '';
-  Array.from(listContainer.value.querySelectorAll('li span')).forEach((span) => {
-    span.onclick = function () {
-      span.parentElement.remove();
-      saveData();
-    };
-  });
+  const storedTasks = JSON.parse(localStorage.getItem('taskData')) || [];
+  tasks.value = storedTasks;
+}
+
+// Remove a task
+function removeTask(index) {
+  tasks.value.splice(index, 1);
+  saveData();
+}
+
+// Edit a task
+function editTask(index) {
+  tasks.value[index].editing = true;
+}
+
+// Finish editing a task
+function finishEdit(index) {
+  tasks.value[index].editing = false;
+  saveData();
 }
 
 onMounted(() => {
   loadTasks();
-
-  listContainer.value.addEventListener('click', function (e) {
-    if (e.target.tagName === 'LI') {
-      e.target.classList.toggle('checked');
-      saveData();
-    }
-  });
 });
 </script>
 
 <style scoped>
-
- .content{
-  
-  background-color: #3c3744;
-  
+.site-header {
+  background-color: #000000;
+  color: #fff;
+  padding: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
-
+.content {
+  background-color: #3c3744;
+}
 
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
-    
+
 .task-date {
   font-size: 0.9rem;
   color: #bbb;
@@ -115,83 +144,64 @@ onMounted(() => {
   align-items: center;
 }
 
-
-
-.todo-app h2{
-    color:whitesmoke;
-    font-size: 2rem;
-    margin-bottom: 10px;
-    margin-left: 20px;
-    animation: text 10s linear infinite;
+.todo-app h2 {
+  color: whitesmoke;
+  font-size: 2rem;
+  margin-bottom: 10px;
+  margin-left: 20px;
+  animation: text 10s linear infinite;
 }
 
- @keyframes text {
-    0% { color:#ffffff; }
-    25% { color:red; }
-    50% { color: blue;}
-    75% { color: orange;}
-    100% { color:green; }
+@keyframes text {
+  0% {
+    color: #ffffff;
+  }
+  25% {
+    color: red;
+  }
+  50% {
+    color: blue;
+  }
+  75% {
+    color: orange;
+  }
+  100% {
+    color: green;
+  }
 }
 
-
-
-.todo-app{
-    background: #1c1c1c;
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-  
+.todo-app {
+  background: #1c1c1c;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
 }
 
-
-
-
-
-button{
-    height: 5vh;
-    width: 20vh;
-    background: orange;
-    color:#fff;
-    border-radius: 5px;
-    border: none;
-    padding: 5px;
+button {
+  height: 5vh;
+  width: 20vh;
+  background: orange;
+  color: #fff;
+  border-radius: 5px;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
 }
 
-button:hover{
-    background:red;
-    color: #fbfff1;
+button:hover {
+  background: red;
+  color: #fbfff1;
 }
 
-
-
-
-
-.link {
-    background: #3c3744;
-    color: #ddd;
-    padding: 10px 20px;
-    text-decoration: none;
-    font-size: 1rem;
-    border-radius: 10px;
-    text-align: center;
-}
-
-.link:hover{
-    background: #ddd;
-    color: #3c3744;
-}
-#input-box{
+#input-box {
   width: 600px;
   height: 150px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background:#1c1c1c;
+  background: #1c1c1c;
   color: #fff;
   outline: none;
   border: none;
-  box-shadow:inset 0 0 10px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
   padding: 10px;
 }
 
@@ -204,66 +214,66 @@ button:hover{
   background-color: #000;
 }
 
-#task-column p {
-  text-align: left;
-  font-size: 1rem;
-  background: #1c1c1c;
-  color: #fbfff1;
-  padding: 20px;
-  border-radius: 10px;
-  white-space: normal;
-  overflow-wrap: break-word;
-  position: relative;
-  min-height: 150px;
-}
 ul li {
   text-align: left;
-  width: 50%;
   list-style: none;
-  padding: 12px 40px 12px 40px;
+  padding: 12px 10px;
   background: #3c3744;
   color: #fff;
   font-size: 20px;
   text-transform: capitalize;
   user-select: none;
-  cursor: pointer;
-  border-bottom: black;
-  white-space: normal;
-  overflow-wrap: break-word;
   position: relative;
   border-radius: 8px;
   margin: 5px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 /* When task is completed */
-ul li.checked {
+ul li.checked span {
   color: #bbb;
   text-decoration: line-through;
 }
 
-/* Add checkmark on completed tasks */
-ul li.checked::before {
-  content: '✔';
-  position: absolute;
-  left: 10px;
-  color: green;
-  font-size: 20px;
-}
-
-/* Delete Button (X) */
-ul li span.delete-btn {
-  position: absolute;
-  right: 10px;
-  color: #fff;
-  font-size: 20px;
+/* Edit Button */
+.edit-btn {
+  background: blue;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: color 0.3s ease;
 }
 
-ul li span.delete-btn:hover {
-  color: red;
+.edit-btn:hover {
+  background: darkblue;
 }
 
+/* Delete Button */
+.delete-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
+.delete-btn:hover {
+  background: darkred;
+}
 
+/* Edit input */
+.edit-input {
+  width: 100%;
+  background: #1c1c1c;
+  color: #fff;
+  border: none;
+  padding: 5px;
+  border-radius: 5px;
+  outline: none;
+}
 </style>

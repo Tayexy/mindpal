@@ -1,10 +1,20 @@
 <template>
+   <header class="site-header">
+    <marquee behavior="scroll" direction="left" scrollamount="5">
+      ⚠ Your data is stored locally in your browser. Clearing browser data or using a different browser/device will remove your saved progress.
+    </marquee>
+  </header>
   <div class="content">
+     <button class="back-button" @click="$router.go(-1)">Back</button>
     <div class="note">
       <div class="note-container">
-        <h2>what's happening today?</h2>
+        <h2>What's happening today?</h2>
 
-        <textarea id="input-tab" v-model="noteText" placeholder="type in your text"></textarea>
+        <textarea
+          id="input-tab"
+          v-model="noteText"
+          placeholder="Type in your text"
+        ></textarea>
 
         <div class="btn-gap">
           <label for="image-input" class="custom-file-upload">📷 Add Image</label>
@@ -23,14 +33,42 @@
             ref="previewImg"
             :src="previewSrc"
             alt="Image Preview"
-            style="display: none; width: 100px; height: 100px"
+            v-show="previewSrc"
+            style="width: 100px; height: 100px"
           />
         </div>
       </div>
     </div>
 
-    <!-- Notes display area moved outside note box -->
-    <div contenteditable="true" id="note-column" ref="noteColumn" class="note-display"></div>
+    <!-- Notes Display -->
+    <div id="note-column" class="note-display">
+      <div
+        v-for="(note, index) in notes"
+        :key="index"
+        class="note-card"
+      >
+        <!-- Editable text -->
+        <div v-if="!note.editing" class="note-content" @dblclick="editNote(index)">
+          {{ note.text }}
+        </div>
+        <textarea
+          v-else
+          v-model="note.text"
+          @keyup.enter="finishEdit(index)"
+          @blur="finishEdit(index)"
+          class="edit-input"
+        ></textarea>
+
+        <!-- Optional image -->
+        <img v-if="note.image" :src="note.image" alt="Note Image" class="note-img" id="custom-file-upload" />
+
+        <!-- Action buttons -->
+        <div class="note-actions">
+          <button class="edit-btn" @click="editNote(index)" v-if="!note.editing">Edit</button>
+          <button class="delete-btn" @click="removeNote(index)">Delete</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -40,77 +78,66 @@ import { ref, onMounted } from 'vue';
 const noteText = ref('');
 const imageInput = ref(null);
 const previewImg = ref(null);
-const noteColumn = ref(null);
 const previewSrc = ref('');
+const notes = ref([]);
 
 // Show image preview
 function previewImage() {
   const file = imageInput.value.files[0];
   if (file) {
     previewSrc.value = URL.createObjectURL(file);
-    previewImg.value.style.display = 'block';
   } else {
     previewSrc.value = '';
-    previewImg.value.style.display = 'none';
   }
 }
 
-// Add new note with optional image
+// Add new note
 function addNote() {
-  if (noteText.value === '') {
+  if (noteText.value.trim() === '') {
     alert('You must input a text');
     return;
   }
 
-  const p = document.createElement('p');
-  p.innerHTML = noteText.value;
+  notes.value.push({
+    text: noteText.value.trim(),
+    image: previewSrc.value || '',
+    editing: false,
+  });
 
-  const file = imageInput.value.files[0];
-  if (file) {
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    img.style.width = '100px';
-    img.style.height = '100px';
-    img.style.display = 'block';
-    img.style.marginTop = '10px';
-    p.appendChild(img);
-  }
-
-  const span = document.createElement('span');
-  span.innerHTML = '\u00d7';
-  span.style.cursor = 'pointer';
-  span.className = 'close-btn';
-  span.onclick = function () {
-    p.remove();
-    keepData();
-  };
-
-  p.appendChild(span);
-  noteColumn.value.appendChild(p);
-
-  // Reset fields
+  // Reset input
   noteText.value = '';
   imageInput.value.value = '';
   previewSrc.value = '';
-  previewImg.value.style.display = 'none';
 
-  keepData();
+  saveNotes();
 }
 
-// Save notes to localStorage
-function keepData() {
-  localStorage.setItem('noteData', noteColumn.value.innerHTML);
+// Remove note
+function removeNote(index) {
+  notes.value.splice(index, 1);
+  saveNotes();
 }
 
-// Load notes on page mount
+// Edit note
+function editNote(index) {
+  notes.value[index].editing = true;
+}
+
+// Finish editing
+function finishEdit(index) {
+  notes.value[index].editing = false;
+  saveNotes();
+}
+
+// Save to localStorage
+function saveNotes() {
+  localStorage.setItem('noteData', JSON.stringify(notes.value));
+}
+
+// Load from localStorage
 function loadNotes() {
-  noteColumn.value.innerHTML = localStorage.getItem('noteData') || '';
-  Array.from(noteColumn.value.querySelectorAll('p span')).forEach((span) => {
-    span.onclick = function () {
-      span.parentElement.remove();
-      keepData();
-    };
-  });
+  const storedNotes = JSON.parse(localStorage.getItem('noteData')) || [];
+  notes.value = storedNotes;
 }
 
 onMounted(() => {
@@ -119,20 +146,24 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
-.content{
-  
-  background-color: #3c3744;
-  
+.site-header {
+  background-color: #000000;
+  color: #fff;
+  padding: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
-
+.content {
+  background-color: #3c3744;
+}
 
 .note {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  
 }
 
 .note-container {
@@ -143,40 +174,17 @@ onMounted(() => {
   text-align: center;
 }
 
-
-
 .note-container h2 {
   color: whitesmoke;
   font-size: 2rem;
   margin-bottom: 10px;
-  margin-left: 20px;
   animation: text 10s linear infinite;
 }
 
 @keyframes text {
-  0% {
-    color: #ffffff;
-  }
-  50% {
-    color: #3c3744;
-  }
-  100% {
-    color: #fbfff1;
-  }
-}
-
-.note-container input {
-  height: 5vh;
-  width: 50vh;
-  border: none;
-  margin-bottom: 20px;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-.note-container input:focus {
-  color: #000000;
-  background: silver;
+  0% { color: #ffffff; }
+  50% { color: #3c3744; }
+  100% { color: #fbfff1; }
 }
 
 button {
@@ -199,49 +207,61 @@ button:hover {
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   padding: 20px;
-  color: #fff;
   background-color: #000;
 }
 
-#note-column p {
-  text-align: left;
-  font-size: 1rem;
+.note-card {
   background: #1c1c1c;
   color: #fbfff1;
   padding: 20px;
   border-radius: 10px;
-  white-space: normal;
-  overflow-wrap: break-word;
-  position: relative;
   min-height: 150px;
+  position: relative;
 }
 
-#note-column p[contenteditable="true"]:focus {
-  outline: 2px dashed #aaa;
-  background-color: #2c2c2c;
+.note-img {
+  display: block;
+  width: 100%;
+  max-height: 150px;
+  object-fit: cover;
+  margin-top: 10px;
+  border-radius: 5px;
 }
 
-
-
-p span:hover {
-  color: #3268a9;
+.note-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
 }
 
-.link {
-  background: #3c3744;
-  color: #ddd;
-  padding: 10px 20px;
-  text-decoration: none;
-  font-size: 1rem;
-  border-radius: 10px;
-  text-align: center;
+.edit-btn {
+  background: blue;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.link:hover {
-  background: #ddd;
-  color: #3c3744;
+.delete-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
+.edit-input {
+  width: 100%;
+  background: #2c2c2c;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  outline: none;
+  resize: none;
+}
 #input-tab {
   width: 600px;
   height: 150px;
@@ -256,7 +276,7 @@ p span:hover {
   padding: 10px;
 }
 
-.custom-file-upload {
+label {
   display: inline-block;
   padding: 10px 20px;
   cursor: pointer;
@@ -275,27 +295,4 @@ p span:hover {
   justify-content: space-evenly;
   align-items: center;
 }
-.note-box{
-  display: inline-box;
-}
-
-.close-btn {
-  cursor: pointer;
-  font-size: 1rem;
-  color: red;
-  position: absolute;
-  right: 10px;
-  top: 10px;
-}
-
-.close-btn:hover {
-  color: #3268a9;
-}
-
-@media (max-width: 768px) {
-  .note-display {
-    grid-template-columns: repeat(1, 1fr); /* 1 note per row on mobile */
-  }
-}
-
 </style>

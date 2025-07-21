@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <Header />
+    
     <router-view /> <!-- Home or other pages will render here -->
   </div>
 </template>

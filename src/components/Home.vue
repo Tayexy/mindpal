@@ -1,4 +1,9 @@
 <template>
+  <header class="site-header">
+    <marquee behavior="scroll" direction="left" scrollamount="5">
+      Your all-in-one companion designed to streamline your day to day activities 
+    </marquee>
+  </header>
   <section class="content">
     <h1 class="info-title">WELCOME TO MINDPAL</h1>
 
@@ -13,9 +18,9 @@
 
     <div class="info-section">
       <div class="box-container">
-        <router-link to="/newsfeed" class="box green">
-          <h3>Newsfeed</h3>
-          <p>Stay updated with the latest news and trends.</p>
+        <router-link to="/habit-tracker" class="box green">
+          <h3>Habit Tracker</h3>
+          <p>Stay updated with your habits and progress.</p>
         </router-link>
 
         <router-link to="/aiassistant" class="box blue">
@@ -84,6 +89,17 @@ export default {
 </script>
 
 <style scoped>
+
+.site-header {
+  background-color: #000000;
+  color: #fff;
+  padding: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
 .content {
   background: #0e0e0e;
   min-height: 100vh;

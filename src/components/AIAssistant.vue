@@ -1,5 +1,13 @@
 <template>
+    
+    <header class="site-header">
+      <marquee behavior="scroll" direction="left" scrollamount="5">
+       Your all-in-one companion designed to streamline your day to day activities 
+      </marquee>
+    </header>
+    <button class="back-button" @click="$router.go(-1)">Back</button>
   <div class="chat-page">
+   
     <div class="chat-container">
       <div class="chat-header">
         <h1>AI Assistant</h1>
@@ -84,6 +92,16 @@ async function handleUserInput() {
 
 
 <style scoped>
+.site-header {
+  background-color: #000000;
+  color: #fff;
+  padding: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
 .chat-page {
   display: flex;
   justify-content: center;
