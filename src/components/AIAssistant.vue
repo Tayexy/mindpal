@@ -60,13 +60,23 @@ function scrollToBottom() {
 }
 
 async function generateResponse(prompt) {
-  const response = await fetch(`${API_URL}?key=${API_KEY}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-  })
-  const data = await response.json()
-  return data?.candidates?.[0]?.content?.parts?.[0]?.text || "I'm not sure how to respond."
+  if (!API_KEY) {
+    return "AI is not available. Please set your API key.";
+  }
+  try {
+    const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+    });
+    if (!response.ok) {
+      return "AI service error. Please try again later.";
+    }
+    const data = await response.json();
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text || "I'm not sure how to respond.";
+  } catch (err) {
+    return "Network error. Please check your connection or try again later.";
+  }
 }
 
 async function handleUserInput() {
