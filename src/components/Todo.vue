@@ -108,6 +108,16 @@ onMounted(() => {
 </script>
 
 <style scoped>
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  background-color: #3c3744;
+  font-family: Arial, sans-serif;
+}
+
 .site-header {
   background-color: #000000;
   color: #fff;
@@ -117,60 +127,26 @@ onMounted(() => {
   top: 0;
   z-index: 1000;
 }
+
 .content {
   background-color: #3c3744;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
 }
 
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 70vh;
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
-}
-
-.task-date {
-  font-size: 0.9rem;
-  color: #bbb;
-  margin-left: 10px;
-  background-color: green;
-  border: none;
-  padding: 5px;
-  border-radius: 5px;
-}
-
-.btn-gap {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-}
-
-.todo-app h2 {
-  color: whitesmoke;
-  font-size: 2rem;
-  margin-bottom: 10px;
-  margin-left: 20px;
-  animation: text 10s linear infinite;
-}
-
-@keyframes text {
-  0% {
-    color: #ffffff;
-  }
-  25% {
-    color: red;
-  }
-  50% {
-    color: blue;
-  }
-  75% {
-    color: orange;
-  }
-  100% {
-    color: green;
-  }
 }
 
 .todo-app {
@@ -179,28 +155,28 @@ onMounted(() => {
   padding: 20px;
   border-radius: 10px;
   text-align: center;
-}
-
-button {
-  height: 5vh;
-  width: 20vh;
-  background: orange;
-  color: #fff;
-  border-radius: 5px;
-  border: none;
-  padding: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: red;
-  color: #fbfff1;
-}
-
-#input-box {
   width: 100%;
   max-width: 600px;
-  min-width: 200px;
+  box-sizing: border-box;
+}
+
+.todo-app h2 {
+  color: whitesmoke;
+  font-size: 2rem;
+  margin-bottom: 10px;
+  animation: text 10s linear infinite;
+}
+
+@keyframes text {
+  0% { color: #ffffff; }
+  25% { color: red; }
+  50% { color: blue; }
+  75% { color: orange; }
+  100% { color: green; }
+}
+
+textarea#input-box {
+  width: 100%;
   height: 150px;
   background: #1c1c1c;
   color: #fff;
@@ -210,6 +186,56 @@ button:hover {
   padding: 10px;
   box-sizing: border-box;
   resize: vertical;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.btn-gap {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+button {
+  height: 40px;
+  background: orange;
+  color: #fff;
+  border-radius: 5px;
+  border: none;
+  padding: 0 15px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: red;
+  color: #fbfff1;
+}
+
+/* Dark theme date input */
+.task-date {
+  font-size: 0.95rem;
+  color: #fff;
+  background-color: #222;
+  border: 1px solid #444;
+  padding: 8px;
+  border-radius: 5px;
+  outline: none;
+  width: 100%;
+  max-width: 250px;
+  transition: border-color 0.3s ease;
+}
+
+.task-date:focus {
+  border-color: orange;
+}
+
+.task-date::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
 }
 
 .task-display {
@@ -220,49 +246,42 @@ button:hover {
   color: #fff;
   background-color: #000;
   box-sizing: border-box;
+  width: 100%;
 }
 
 ul li {
-  text-align: left;
-  list-style: none;
-  padding: 12px 10px;
-  background: #3c3744;
-  color: #fff;
-  font-size: 20px;
-  text-transform: capitalize;
-  user-select: none;
-  position: relative;
-  border-radius: 8px;
-  margin: 5px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  padding: 12px 10px;
+  background: #3c3744;
+  border-radius: 8px;
   word-break: break-word;
-  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* When task is completed */
-ul li.checked span {
-  color: #bbb;
-  text-decoration: line-through;
+ul li span {
+  flex: 1; /* Allow task text to fill remaining space */
 }
 
-/* Edit Button */
-.edit-btn {
-  background: blue;
-  color: white;
-  border: none;
-  padding: 5px 10px;
+.edit-input {
+  flex: 1; /* Make input take the available space */
+  background: #1c1c1c;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 5px 8px;
   border-radius: 5px;
-  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+  font-size: 1rem;
 }
 
 .edit-btn:hover {
   background: darkblue;
 }
 
-/* Delete Button */
 .delete-btn {
   background: red;
   color: white;
@@ -276,7 +295,6 @@ ul li.checked span {
   background: darkred;
 }
 
-/* Edit input */
 .edit-input {
   width: 100%;
   background: #1c1c1c;
@@ -306,9 +324,8 @@ ul li.checked span {
   .container {
     padding: 5px;
   }
-  #input-box {
-    max-width: 100vw;
-    min-width: 0;
+  textarea#input-box {
+    height: 120px;
     font-size: 1rem;
   }
   ul li {
@@ -322,34 +339,29 @@ ul li.checked span {
     padding: 2px;
   }
   .todo-app {
-    padding: 5px;
+    padding: 10px;
     font-size: 0.95rem;
   }
-  .todo-app h2{
+  .todo-app h2 {
     font-size: 1.5rem;
   }
   ul li {
     padding: 8px 2px;
     font-size: 0.95rem;
   }
-  #input-box {
+  textarea#input-box {
     height: 100px;
     font-size: 0.95rem;
   }
   .btn-gap {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;;
     gap: 8px;
-  }
-  .date-label {
-    display: block;
-    margin-bottom: 2px;
-    margin-right: 0;
   }
   .task-date,
   .btn-gap button {
     width: 100%;
+    max-width: none;
   }
 }
+
 </style>

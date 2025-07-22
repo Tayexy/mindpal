@@ -86,6 +86,13 @@ export default {
 </script>
 <style scoped>
 
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #0e0e0e;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
 .site-header {
   background-color: #000000;
   color: #fff;
@@ -99,12 +106,13 @@ export default {
 .content {
   background: #0e0e0e;
   min-height: 100vh;
-  width: 100%; /* changed from 100vw to 100% */
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   padding-top: 20px;
+  box-sizing: border-box;
 }
 
 .info-title {
@@ -171,7 +179,7 @@ export default {
   padding: 25px;
   border-top: 4px solid transparent;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  min-width: 300px;
+  width: 100%;
   max-width: 350px;
   text-align: center;
   text-decoration: none;
@@ -214,15 +222,22 @@ export default {
   color: #ff4c4c;
 }
 
+/* Mobile adjustments */
 @media (max-width: 600px) {
   .box-container {
-    padding: 0 8vw;
-    gap: 14px;
+    padding: 0 10px;
+    gap: 12px;
   }
   .box {
-    min-width: 84vw;
-    max-width: 100vw;
+    max-width: 100%;
     padding: 16px;
+  }
+  .info-title {
+    font-size: 1.6rem;
+  }
+  .quote-slider {
+    font-size: 1rem;
+    padding: 0 10px;
   }
 }
 
