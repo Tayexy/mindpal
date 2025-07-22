@@ -17,6 +17,7 @@
         ></textarea>
 
         <div class="btn-gap">
+          <label for="taskDate">Select Date & Time:</label>
           <input type="datetime-local" class="task-date" v-model="taskDate" />
           <button @click="addTask">Add Task</button>
         </div>
@@ -304,6 +305,13 @@ ul li span {
   border-radius: 5px;
   outline: none;
 }
+label {
+  color: white;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  display: block;
+}
+
 
 /* Responsive styles */
 @media (max-width: 1024px) {

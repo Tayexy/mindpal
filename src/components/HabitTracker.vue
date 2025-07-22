@@ -23,7 +23,13 @@
         placeholder="Add a new habit..."
         @keyup.enter="addHabit"
       />
-      <input type="datetime-local" v-model="taskDate" />
+      <label for="taskDate">Select Date & Time:</label>
+<input 
+  id="taskDate"
+  type="datetime-local" 
+  v-model="taskDate" 
+/>
+
       <button @click="addHabit">Add Habit</button>
     </div>
 
@@ -146,6 +152,7 @@ const completedHabits = computed(() =>
 .tracker-container {
   background: #1c1c1c;
   min-width: none;
+  min-height: 100vh;
 }
 
 .tracker {
@@ -236,6 +243,13 @@ button:hover {
   height: 20px;
   cursor: pointer;
 }
+label {
+  color: white;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  display: block;
+}
+
 
 .habit-summary {
   margin-top: 20px;
