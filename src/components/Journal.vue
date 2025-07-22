@@ -1,11 +1,11 @@
 <template>
-   <header class="site-header">
+  <header class="site-header">
     <marquee behavior="scroll" direction="left" scrollamount="5">
       ⚠ Your data is stored locally in your browser. Clearing browser data or using a different browser/device will remove your saved progress.
     </marquee>
   </header>
   <div class="content">
-     <button class="back-button" @click="$router.go(-1)">Back</button>
+    <button class="back-button" @click="$router.go(-1)">Back</button>
     <div class="note">
       <div class="note-container">
         <h2>What's happening today?</h2>
@@ -60,13 +60,29 @@
         ></textarea>
 
         <!-- Optional image -->
-        <img v-if="note.image" :src="note.image" alt="Note Image" class="note-img" id="custom-file-upload" />
+        <img
+          v-if="note.image"
+          :src="note.image"
+          alt="Note Image"
+          class="note-img"
+          id="custom-file-upload"
+          @click="openImagePreview(note.image)"
+          style="cursor:pointer"
+        />
 
         <!-- Action buttons -->
         <div class="note-actions">
           <button class="edit-btn" @click="editNote(index)" v-if="!note.editing">Edit</button>
           <button class="delete-btn" @click="removeNote(index)">Delete</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div v-if="showModal" class="modal-overlay" @click="closeImagePreview">
+      <div class="modal-content" @click.stop>
+        <img :src="modalImage" alt="Preview" />
+        <button class="close-modal" @click="closeImagePreview">Close</button>
       </div>
     </div>
   </div>
@@ -81,11 +97,18 @@ const previewImg = ref(null);
 const previewSrc = ref('');
 const notes = ref([]);
 
+const showModal = ref(false);
+const modalImage = ref('');
+
 // Show image preview
 function previewImage() {
   const file = imageInput.value.files[0];
   if (file) {
-    previewSrc.value = URL.createObjectURL(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewSrc.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
   } else {
     previewSrc.value = '';
   }
@@ -138,6 +161,16 @@ function saveNotes() {
 function loadNotes() {
   const storedNotes = JSON.parse(localStorage.getItem('noteData')) || [];
   notes.value = storedNotes;
+}
+
+// Image preview modal
+function openImagePreview(img) {
+  modalImage.value = img;
+  showModal.value = true;
+}
+function closeImagePreview() {
+  showModal.value = false;
+  modalImage.value = '';
 }
 
 onMounted(() => {
@@ -354,5 +387,56 @@ label {
     height: 100px;
     font-size: 0.95rem;
   }
+  .btn-gap {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+ 
+  .btn-gap button {
+    width: 100%;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.modal-content {
+  background: #222;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+.modal-content img {
+  max-width: 80vw;
+  max-height: 60vh;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+.close-modal {
+  background: red;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.close-modal:hover {
+  background: darkred;
 }
 </style>

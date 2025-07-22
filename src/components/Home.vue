@@ -161,6 +161,9 @@ export default {
   gap: 20px;
   justify-content: center;
   max-width: 1000px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 20px;
 }
 
 .box {
@@ -176,6 +179,7 @@ export default {
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: block;
+  margin: 0 auto;
 }
 
 .box:hover {
@@ -209,4 +213,17 @@ export default {
   border-top-color: #ff4c4c;
   color: #ff4c4c;
 }
+
+@media (max-width: 600px) {
+  .box-container {
+    padding: 0 8vw;
+    gap: 14px;
+  }
+  .box {
+    min-width: 84vw;
+    max-width: 100vw;
+    padding: 16px;
+  }
+}
+
 </style>

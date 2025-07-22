@@ -336,5 +336,20 @@ ul li.checked span {
     height: 100px;
     font-size: 0.95rem;
   }
+  .btn-gap {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;;
+    gap: 8px;
+  }
+  .date-label {
+    display: block;
+    margin-bottom: 2px;
+    margin-right: 0;
+  }
+  .task-date,
+  .btn-gap button {
+    width: 100%;
+  }
 }
 </style>
