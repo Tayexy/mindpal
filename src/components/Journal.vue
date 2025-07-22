@@ -164,6 +164,8 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .note-container {
@@ -172,6 +174,9 @@ onMounted(() => {
   padding: 20px;
   border-radius: 10px;
   text-align: center;
+  width: 100%;
+  max-width: 700px;
+  box-sizing: border-box;
 }
 
 .note-container h2 {
@@ -208,6 +213,7 @@ button:hover {
   gap: 20px;
   padding: 20px;
   background-color: #000;
+  box-sizing: border-box;
 }
 
 .note-card {
@@ -217,6 +223,8 @@ button:hover {
   border-radius: 10px;
   min-height: 150px;
   position: relative;
+  word-break: break-word;
+  max-width: 100%;
 }
 
 .note-img {
@@ -263,7 +271,9 @@ button:hover {
   resize: none;
 }
 #input-tab {
-  width: 600px;
+  width: 100%;
+  max-width: 600px;
+  min-width: 200px;
   height: 150px;
   display: flex;
   justify-content: center;
@@ -274,6 +284,8 @@ button:hover {
   border: none;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
   padding: 10px;
+  box-sizing: border-box;
+  resize: vertical;
 }
 
 label {
@@ -294,5 +306,53 @@ label {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .note-display {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .note-container {
+    max-width: 90vw;
+  }
+}
+
+@media (max-width: 700px) {
+  .note-display {
+    grid-template-columns: 1fr;
+    padding: 10px;
+    gap: 15px;
+  }
+  .note-container {
+    padding: 10px;
+    max-width: 100vw;
+  }
+  #input-tab {
+    max-width: 100vw;
+    min-width: 0;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .note {
+    padding: 5px;
+  }
+  .note-container {
+    padding: 5px;
+    font-size: 0.95rem;
+  }
+  .note-container h2{
+    font-size: 1.5rem;
+  }
+  .note-card {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+  #input-tab {
+    height: 100px;
+    font-size: 0.95rem;
+  }
 }
 </style>

@@ -1,10 +1,9 @@
 <template>
   <header class="site-header">
-    <marquee behavior="scroll" direction="left" scrollamount="5">
+    <div class="scrolling-text">
       Your all-in-one companion designed to streamline your day to day activities 
-    </marquee>
+    </div>
   </header>
-  
 </template>
 
 <script setup>
@@ -20,6 +19,24 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+}
+
+.scrolling-text {
+  white-space: nowrap;
+  overflow: hidden;
+  box-sizing: border-box;
+  animation: scroll-left 15s linear infinite;
+  font-size: 1.1rem;
+  padding-left: 100%;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 .container {

@@ -1,38 +1,58 @@
 <template>
-   <header class="site-header">
+  <header class="site-header">
     <marquee behavior="scroll" direction="left" scrollamount="5">
-      ⚠ Your data is stored locally in your browser. Clearing browser data or using a different browser/device will remove your saved progress.
+      ⚠ Your data is stored locally. Clearing browser data will remove progress.
     </marquee>
   </header>
- 
+<div class="tracker-container">
   
-  <div class="tracker">
-     <button class="back-button" @click="$router.go(-1)">Back</button>
-    <h2>Take Charge of Your Habit</h2>
-    <div class="tracker-content">
-      <p>Track your habits and stay motivated!</p>
-    </div>
 
-    <!-- Add Habit -->
-    <input
-      type="text"
-      v-model="newHabit"
-      ref="inputTracker"
-      placeholder="Add a new habit..."
-      @keyup.enter="addHabit"
-    />
-    <button @click="addHabit">Add Habit</button>
+    <!-- Back Button -->
+  <button class="back-button" @click="$router.go(-1)">Back</button>
+
+  <div class="tracker">
+    <h2>Take Charge of Your Habit</h2>
+    
+
+    <!-- Add Habit Form -->
+    <div class="form-group">
+      <input
+        type="text"
+        v-model="newHabit"
+        ref="inputTracker"
+        placeholder="Add a new habit..."
+        @keyup.enter="addHabit"
+      />
+      <input type="datetime-local" v-model="taskDate" />
+      <button @click="addHabit">Add Habit</button>
+    </div>
 
     <!-- Habit List -->
     <div class="habit-list" v-if="habitList.length > 0">
       <ul>
-        <li v-for="(habit, index) in habitList" :key="index">
-          <input
-            type="checkbox"
-            v-model="habit.completed"
-            @change="saveHabits"
-          />
-          <span :class="{ completed: habit.completed }">{{ habit.name }}</span>
+        <li
+          v-for="(habit, index) in habitList"
+          :key="index"
+          :class="{
+            expired: isExpired(habit),
+            completed: habit.completed,
+            successful: isSuccessful(habit)
+          }"
+        >
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              v-model="habit.completed"
+              @change="saveHabits"
+            />
+            checkbox
+          </label>
+          <span>
+            {{ habit.name }}
+            <span v-if="isSuccessful(habit)">🏆</span>
+            <span v-if="isExpired(habit)">⏰ Timeout</span>
+          </span>
+          <small>Due: {{ formatDate(habit.date) }}</small>
           <button @click="removeHabit(index)">Remove</button>
         </li>
       </ul>
@@ -46,39 +66,53 @@
       <p>Completed: {{ completedHabits }}</p>
     </div>
   </div>
+</div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
 const inputTracker = ref(null);
-const habitList = ref([]); // List of habit objects { name: '', completed: false }
+const habitList = ref([]);
 const newHabit = ref('');
+const taskDate = ref('');
 
-// Add Habit
 function addHabit() {
-  if (newHabit.value.trim()) {
-    habitList.value.push({ name: newHabit.value.trim(), completed: false });
-    newHabit.value = ''; // Clear input
-    saveHabits(); // Save to localStorage
-    if (inputTracker.value) {
-      inputTracker.value.focus(); // Focus back on input
-    }
+  if (newHabit.value.trim() && taskDate.value) {
+    habitList.value.push({
+      name: newHabit.value.trim(),
+      completed: false,
+      date: taskDate.value
+    });
+    newHabit.value = '';
+    taskDate.value = '';
+    saveHabits();
+    if (inputTracker.value) inputTracker.value.focus();
   }
 }
 
-// Remove Habit
 function removeHabit(index) {
   habitList.value.splice(index, 1);
   saveHabits();
 }
 
-// Save Habits to Local Storage
 function saveHabits() {
   localStorage.setItem('habitList', JSON.stringify(habitList.value));
 }
 
-// Load Habits from Local Storage
+function formatDate(isoString) {
+  const date = new Date(isoString);
+  return date.toLocaleString();
+}
+
+function isExpired(habit) {
+  return !habit.completed && new Date() > new Date(habit.date);
+}
+
+function isSuccessful(habit) {
+  return habit.completed && new Date(habit.date) >= new Date();
+}
+
 onMounted(() => {
   const storedHabits = localStorage.getItem('habitList');
   if (storedHabits) {
@@ -86,7 +120,6 @@ onMounted(() => {
   }
 });
 
-// Computed property for completed habits
 const completedHabits = computed(() =>
   habitList.value.filter((habit) => habit.completed).length
 );
@@ -94,38 +127,65 @@ const completedHabits = computed(() =>
 
 <style scoped>
 .site-header {
-  background-color: #000000;
+  background: #000;
   color: #fff;
-  padding: 20px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-.tracker {
-  min-height: 100vh;
-  background: #3c3774;
-  color: #ffffff;
-  padding: 40px;
-  text-align: center;
-  font-family: Arial, sans-serif;
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-input[type="text"] {
-  padding: 8px;
-  width: 40%;
+.back-button {
+  background: #f39c12;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 1em;
+  cursor: pointer;
+  margin: 15px 20px;
+}
+.tracker-container {
+  background: #1c1c1c;
+  min-width: none;
+}
+
+.tracker {
+  padding: 20px;
+  color: #fff;
+  font-family: sans-serif;
+  box-sizing: border-box;
+}
+
+.tracker h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="datetime-local"] {
+  padding: 10px;
   border-radius: 5px;
   border: none;
+  font-size: 1em;
+  min-width: 250px;
+  height: 20px;
 }
 
 button {
-  margin-left: 10px;
-  padding: 8px 12px;
+  padding: 10px 15px;
   background: #f39c12;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 button:hover {
@@ -133,24 +193,80 @@ button:hover {
 }
 
 .habit-list ul {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .habit-list li {
-  margin: 10px 0;
+  background: #000;
+  margin-bottom: 10px;
+  padding: 15px;
+  border-radius: 5px;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 5px;
+  transition: background 0.3s;
+}
+
+.habit-list li.expired {
+  background: #ff4e4e;
+  color: #fff;
+}
+
+.habit-list li.successful {
+  background: #2ecc71;
+  color: #fff;
 }
 
 .habit-list span.completed {
   text-decoration: line-through;
-  color: #aaa;
+}
+
+.checkbox-label {
+  font-size: 1.2em;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
 }
 
 .habit-summary {
   margin-top: 20px;
+  background: #161616;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
+
+@media (max-width: 600px) {
+  .form-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  
+  button {
+    width: 100%;
+    font-size: 0.9em;
+    padding: 6px;
+    height: 36px; /* Match input height */
+  }
+
+  .back-button {
+    margin: 8px;
+    width: calc(100% - 16px);
+    padding: 6px;
+    font-size: 0.9em;
+  }
+}
+
+
 </style>

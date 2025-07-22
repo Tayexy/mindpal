@@ -1,7 +1,7 @@
 <template>
   <header class="site-header">
     <marquee behavior="scroll" direction="left" scrollamount="5">
-      Your all-in-one companion designed to streamline your day to day activities 
+      Your all-in-one companion designed to streamline your day to day activities
     </marquee>
   </header>
   <section class="content">
@@ -20,7 +20,7 @@
       <div class="box-container">
         <router-link to="/habit-tracker" class="box green">
           <h3>Habit Tracker</h3>
-          <p>Stay updated with your habits and progress.</p>
+          <p>Keep track of your daily routines, monitor your progress, and stay motivated</p>
         </router-link>
 
         <router-link to="/aiassistant" class="box blue">
@@ -46,48 +46,44 @@
 export default {
   data() {
     return {
-      quotes: [],        // Quotes from API
-      currentIndex: 0,   // Current quote index
+      quotes: [
+  { q: "Stay positive and keep moving forward!", a: "Roy T. Bennett" },
+  { q: "You are stronger than you think.", a: "A.A. Milne" },
+  { q: "Each day is a fresh start.", a: "Oprah Winfrey" },
+  { q: "Discipline is the bridge between goals and accomplishment.", a: "Jim Rohn" },
+  { q: "Small daily improvements lead to stunning results.", a: "Robin Sharma" },
+  { q: "Do what you can, with what you have, where you are.", a: "Theodore Roosevelt" },
+  { q: "Success is the sum of small efforts repeated daily.", a: "Robert Collier" },
+  { q: "Happiness depends upon ourselves.", a: "Aristotle" },
+  { q: "Dream big. Start small. Act now.", a: "Robin Sharma" },
+  { q: "Don’t let yesterday take up too much of today.", a: "Will Rogers" },
+  { q: "Your limitation—it's only your imagination.", a: "Tony Robbins" },
+  { q: "Turn your wounds into wisdom.", a: "Oprah Winfrey" },
+  { q: "Success is not final, failure is not fatal: it is the courage to continue that counts.", a: "Winston Churchill" },
+  { q: "Hustle beats talent when talent doesn’t hustle.", a: "Ross Simmonds" },
+  { q: "Act as if what you do makes a difference. It does.", a: "William James" }
+],
+
+      currentIndex: 0,
     };
   },
   computed: {
     currentQuote() {
-      return this.quotes.length
-        ? this.quotes[this.currentIndex]
-        : { q: "Loading daily affirmation...", a: "" }; // Show loading text initially
+      return this.quotes[this.currentIndex];
     },
   },
   mounted() {
-    this.fetchQuotes();
+    this.startSlider();
   },
   methods: {
-    async fetchQuotes() {
-      try {
-        const response = await fetch("https://zenquotes.io/api/quotes");
-        const data = await response.json();
-        this.quotes = data;  // Use all quotes from the API
-        this.startSlider();
-      } catch (error) {
-        console.error("Error fetching quotes:", error);
-        // Fallback quotes if API fails
-        this.quotes = [
-          { q: "Stay positive and keep moving forward!", a: "Unknown" },
-          { q: "You are stronger than you think.", a: "Unknown" },
-          { q: "Each day is a fresh start.", a: "Unknown" },
-        ];
-        this.startSlider();
-      }
-    },
     startSlider() {
       setInterval(() => {
-        this.currentIndex =
-          (this.currentIndex + 1) % this.quotes.length;
+        this.currentIndex = (this.currentIndex + 1) % this.quotes.length;
       }, 5000); // Rotate every 5 seconds
     },
   },
 };
 </script>
-
 <style scoped>
 
 .site-header {
@@ -103,7 +99,7 @@ export default {
 .content {
   background: #0e0e0e;
   min-height: 100vh;
-  width: 100vw;
+  width: 100%; /* changed from 100vw to 100% */
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -17,7 +17,7 @@
         ></textarea>
 
         <div class="btn-gap">
-          <input type="date" class="task-date" v-model="taskDate" />
+          <input type="datetime-local" class="task-date" v-model="taskDate" />
           <button @click="addTask">Add Task</button>
         </div>
       </div>
@@ -126,6 +126,9 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .task-date {
@@ -195,7 +198,9 @@ button:hover {
 }
 
 #input-box {
-  width: 600px;
+  width: 100%;
+  max-width: 600px;
+  min-width: 200px;
   height: 150px;
   background: #1c1c1c;
   color: #fff;
@@ -203,6 +208,8 @@ button:hover {
   border: none;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
   padding: 10px;
+  box-sizing: border-box;
+  resize: vertical;
 }
 
 .task-display {
@@ -212,6 +219,7 @@ button:hover {
   padding: 20px;
   color: #fff;
   background-color: #000;
+  box-sizing: border-box;
 }
 
 ul li {
@@ -230,6 +238,8 @@ ul li {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  word-break: break-word;
+  max-width: 100%;
 }
 
 /* When task is completed */
@@ -275,5 +285,56 @@ ul li.checked span {
   padding: 5px;
   border-radius: 5px;
   outline: none;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .task-display {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .container {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 700px) {
+  .task-display {
+    grid-template-columns: 1fr;
+    padding: 10px;
+    gap: 15px;
+  }
+  .container {
+    padding: 5px;
+  }
+  #input-box {
+    max-width: 100vw;
+    min-width: 0;
+    font-size: 1rem;
+  }
+  ul li {
+    font-size: 1rem;
+    padding: 10px 5px;
+  }
+}
+
+@media (max-width: 500px) {
+  .container {
+    padding: 2px;
+  }
+  .todo-app {
+    padding: 5px;
+    font-size: 0.95rem;
+  }
+  .todo-app h2{
+    font-size: 1.5rem;
+  }
+  ul li {
+    padding: 8px 2px;
+    font-size: 0.95rem;
+  }
+  #input-box {
+    height: 100px;
+    font-size: 0.95rem;
+  }
 }
 </style>

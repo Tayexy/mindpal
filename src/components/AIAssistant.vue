@@ -5,6 +5,7 @@
        Your all-in-one companion designed to streamline your day to day activities 
       </marquee>
     </header>
+    <div class="content">
     <button class="back-button" @click="$router.go(-1)">Back</button>
   <div class="chat-page">
    
@@ -35,6 +36,7 @@
         <button @click="handleUserInput">Send</button>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -102,13 +104,18 @@ async function handleUserInput() {
   z-index: 1000;
 }
 
+.content{
+ background-color: #1a1a1a;
+}
 .chat-page {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #1a1a1a;
+ 
   color: #e0e0e0;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 .chat-container {
@@ -120,6 +127,7 @@ async function handleUserInput() {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
 .chat-header {
@@ -137,6 +145,7 @@ async function handleUserInput() {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-height: 0;
 }
 
 .message {
@@ -147,6 +156,7 @@ async function handleUserInput() {
   line-height: 1.4;
   word-wrap: break-word;
   animation: fadeIn 0.2s ease-in-out;
+  font-size: 1rem;
 }
 
 .user-message {
@@ -168,6 +178,7 @@ async function handleUserInput() {
   padding: 15px;
   background-color: #2a2a2a;
   border-top: 1px solid #3a3a3a;
+  gap: 10px;
 }
 
 .chat-input-container input {
@@ -179,10 +190,11 @@ async function handleUserInput() {
   color: #e0e0e0;
   font-size: 1rem;
   outline: none;
+  min-width: 0;
 }
 
 .chat-input-container button {
-  margin-left: 10px;
+  margin-left: 0;
   padding: 10px 20px;
   background-color: red;
   border: none;
@@ -213,5 +225,93 @@ async function handleUserInput() {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: #5a5a5a;
+}
+
+.back-button {
+  background: #f39c12;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 1em;
+  cursor: pointer;
+  margin: 15px 20px;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .chat-container {
+    max-width: 98vw;
+    height: 85vh;
+  }
+  .chat-messages {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 700px) {
+  .chat-container {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+  .chat-header {
+    padding: 10px;
+    font-size: 1.1rem;
+  }
+  .chat-messages {
+    padding: 8px;
+    font-size: 0.98rem;
+  }
+  .message {
+    font-size: 0.98rem;
+    padding: 8px 10px;
+    max-width: 90%;
+  }
+  .chat-input-container {
+    padding: 8px;
+    gap: 5px;
+  }
+  .chat-input-container input {
+    font-size: 0.98rem;
+    padding: 8px 10px;
+  }
+  .chat-input-container button {
+    padding: 8px 12px;
+    font-size: 0.98rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .chat-container {
+    height: 100vh;
+    min-width: 0;
+  }
+  .chat-header {
+    font-size: 1rem;
+    padding: 7px;
+  }
+  .chat-messages {
+    padding: 4px;
+    font-size: 0.95rem;
+  }
+  .message {
+    font-size: 0.95rem;
+    padding: 6px 6px;
+    max-width: 98%;
+  }
+  .chat-input-container {
+    padding: 4px;
+    gap: 3px;
+  }
+  .chat-input-container input {
+    font-size: 0.95rem;
+    padding: 6px 6px;
+  }
+  .chat-input-container button {
+    padding: 6px 8px;
+    font-size: 0.95rem;
+  }
 }
 </style>
